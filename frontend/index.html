@@ -6,23 +6,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Prediction Tracker</h1>
-    <form id="tickerForm">
-        <label for="ticker">Stock Ticker:</label>
-        <input type="text" id="ticker" name="ticker" required>
-        <button type="submit">Submit</button>
-    </form>
+    <div class="container">
+        <h1>Prediction Tracker</h1>
+        <form id="predictionForm">
+            <label for="ticker">Stock Ticker:</label>
+            <input type="text" id="ticker" name="ticker" required>
 
-    <div id="results">
-        <h2>Results</h2>
-        <img id="sma_img" src="" alt="SMA Graph">
-        <img id="forecast_img" src="" alt="Forecast Graph">
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="results" style="margin-top: 20px;">
+            <h2>Results:</h2>
+            <div id="smaChart"></div>
+            <div id="forecastChart"></div>
+        </div>
     </div>
-   <!-- Footer -->
-  <footer>
-    Created by <a href="https://www.linkedin.com/in/vickycosta/" target="_blank">Vicky Costa</a>
-  </footer>
 
-  <script src="script.js"></script>
+    <footer style="margin-top: 50px; text-align: center;">
+        Created by <a href="https://www.linkedin.com/in/vickycosta/" target="_blank">Vicky Costa</a>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
