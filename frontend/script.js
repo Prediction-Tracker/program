@@ -1,45 +1,20 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("predictionForm");
-  const resultDiv = document.getElementById("result");
-
-  form.addEventListener("submit", async (e) => {
+document.getElementById("tickerForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    const email = document.getElementById("email").value.trim();
     const ticker = document.getElementById("ticker").value.trim().toUpperCase();
-    const amount = parseFloat(document.getElementById("amount").value);
-    const country = document.getElementById("country").value;
-    const sendCopy = document.getElementById("sendCopy").value;
 
-    if (!email || !ticker || isNaN(amount) || amount <= 0 || !country) {
-      resultDiv.textContent = "Please fill in all fields correctly.";
-      resultDiv.style.color = "red";
-      return;
-    }
-
-    const data = { email, ticker, amount, send_copy: sendCopy, country };
-
-    try {
-      const response = await fetch("/submit", {
+    const res = await fetch("https://your.backend.url/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+        body: JSON.stringify({ ticker })
+    });
 
-      const resData = await response.json();
+    const data = await res.json();
 
-      if (response.ok) {
-        resultDiv.textContent = resData.success;
-        resultDiv.style.color = "green";
-        form.reset();
-      } else {
-        resultDiv.textContent = resData.error || "Error submitting the form.";
-        resultDiv.style.color = "red";
-      }
-    } catch (error) {
-      resultDiv.textContent = "Network or server error.";
-      resultDiv.style.color = "red";
-      console.error(error);
+    if (data.error) {
+        alert(data.error);
+        return;
     }
-  });
+
+    document.getElementById("sma_img").src = "data:image/png;base64," + data.sma_img;
+    document.getElementById("forecast_img").src = "data:image/png;base64," + data.forecast_img;
 });
