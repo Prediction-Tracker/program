@@ -8,3 +8,4 @@ statsmodels
 numpy
 scikit-learn
 tensorflow
+flask-cors
