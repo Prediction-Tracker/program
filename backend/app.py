@@ -1,79 +1,73 @@
 from flask import Flask, request, jsonify
 import yfinance as yf
-import json
-import os
-from cryptography.fernet import Fernet
+import matplotlib.pyplot as plt
+import io, base64
+from statsmodels.tsa.arima.model import ARIMA
+from ta.trend import SMAIndicator
+from ta.momentum import RSIIndicator
+from prophet import Prophet
+import pandas as pd
 
 app = Flask(__name__)
 
-# Chave secreta Fernet (32 bytes Base64) - só você deve conhecer
-KEY = b"COLOQUE_SUA_CHAVE_AQUI"
-fernet = Fernet(KEY)
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.json
+    ticker = data.get("ticker")
+    email = data.get("email")
+    country = data.get("country")
+    send_copy = data.get("sendCopy")
 
-# Arquivos de dados
-EMAIL_DB_FILE = "data/used_emails.json"
-ENC_FILE = "data/submissions.enc"
-
-# Cria pasta data se não existir
-os.makedirs("data", exist_ok=True)
-
-# Carrega emails já usados
-if os.path.exists(EMAIL_DB_FILE):
-    with open(EMAIL_DB_FILE, "r") as f:
-        used_emails = set(json.load(f))
-else:
-    used_emails = set()
-
-@app.route("/submit", methods=["POST"])
-def submit():
-    data = request.get_json()
-    email = data.get("email", "").strip().lower()
-    ticker = data.get("ticker", "").strip().upper()
-    amount = data.get("amount")
-    country = data.get("country", "").strip()
-    send_copy = data.get("send_copy", "no")
-
-    # Validação básica
-    if not email or not ticker or not amount or not country:
-        return jsonify({"error": "All fields are required."}), 400
-
-    if email in used_emails:
-        return jsonify({"error": "This email has already submitted a request."}), 403
-
-    # Valida o ticker
+    # Validar ticker
     try:
-        stock = yf.Ticker(ticker)
-        info = stock.info
-        if "regularMarketPrice" not in info:
-            raise ValueError
+        df = yf.download(ticker, period="1y", interval="1d", auto_adjust=True)
+        if df.empty:
+            return jsonify({"error": "Ticker inválido"}), 400
     except:
-        return jsonify({"error": "Invalid stock ticker."}), 400
+        return jsonify({"error": "Erro ao baixar dados"}), 400
 
-    # Cria submissão
-    submission = {
-        "email": email,
-        "ticker": ticker,
-        "amount": amount,
-        "country": country,
-        "send_copy": send_copy
-    }
+    # Calcular indicadores
+    df["SMA20"] = SMAIndicator(df["Close"], window=20).sma_indicator()
+    df["SMA50"] = SMAIndicator(df["Close"], window=50).sma_indicator()
+    df["RSI"] = RSIIndicator(df["Close"], window=14).rsi()
 
-    # Criptografa e salva
-    submission_json = json.dumps(submission).encode()
-    encrypted_data = fernet.encrypt(submission_json)
-    with open(ENC_FILE, "ab") as f:
-        f.write(encrypted_data + b"\n")
+    # Gerar gráfico SMA + Close
+    plt.figure(figsize=(10,4))
+    plt.plot(df["Close"], label="Close")
+    plt.plot(df["SMA20"], label="SMA20")
+    plt.plot(df["SMA50"], label="SMA50")
+    plt.title(f"{ticker} - Close e SMA")
+    plt.legend()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.read()).decode("utf-8")
+    plt.close()
 
-    # Atualiza lista de emails usados
-    used_emails.add(email)
-    with open(EMAIL_DB_FILE, "w") as f:
-        json.dump(list(used_emails), f)
+    # Gerar previsão Prophet (30 dias)
+    df_reset = df.reset_index()[["Date","Close"]].rename(columns={"Date":"ds","Close":"y"})
+    model = Prophet(daily_seasonality=True)
+    model.fit(df_reset)
+    future = model.make_future_dataframe(periods=30)
+    forecast = model.predict(future)
 
-    # Placeholder envio de cópia
-    if send_copy.lower() == "yes":
-        print(f"Sending copy to {email}... (not implemented)")
+    # Gráfico previsão Prophet
+    plt.figure(figsize=(10,4))
+    plt.plot(df_reset["ds"], df_reset["y"], label="Histórico")
+    plt.plot(forecast["ds"], forecast["yhat"], label="Previsto", linestyle="--")
+    plt.title(f"{ticker} - Previsão 30 dias")
+    plt.legend()
+    buf2 = io.BytesIO()
+    plt.savefig(buf2, format="png")
+    buf2.seek(0)
+    forecast_base64 = base64.b64encode(buf2.read()).decode("utf-8")
+    plt.close()
 
-    return jsonify({"success": f"Request received for {ticker} with amount {amount}"}), 200
+    # Retornar imagens base64
+    return jsonify({
+        "sma_img": img_base64,
+        "forecast_img": forecast_base64
+    })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
