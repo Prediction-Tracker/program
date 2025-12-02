@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS 
 import yfinance as yf
 import matplotlib.pyplot as plt
 import io, base64
@@ -9,6 +10,7 @@ from prophet import Prophet
 import pandas as pd
 
 app = Flask(__name__)
+CORS(app) 
 
 @app.route("/predict", methods=["POST"])
 def predict():
