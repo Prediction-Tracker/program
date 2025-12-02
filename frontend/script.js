@@ -1,20 +1,49 @@
-document.getElementById("tickerForm").addEventListener("submit", async (e) => {
+const form = document.getElementById('predictionForm');
+const smaDiv = document.getElementById('smaChart');
+const forecastDiv = document.getElementById('forecastChart');
+
+// Substitua pela URL do seu backend no Railway
+// const backendUrl = "https://program-production-b75c.up.railway.app/predict";
+const backendUrl = "https://program-production-b75c.up.railway.app/";
+
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const ticker = document.getElementById("ticker").value.trim().toUpperCase();
+    const ticker = document.getElementById('ticker').value.trim().toUpperCase();
 
-    const res = await fetch("https://your.backend.url/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker })
-    });
-
-    const data = await res.json();
-
-    if (data.error) {
-        alert(data.error);
+    if (!ticker) {
+        alert("Please enter a stock ticker.");
         return;
     }
 
-    document.getElementById("sma_img").src = "data:image/png;base64," + data.sma_img;
-    document.getElementById("forecast_img").src = "data:image/png;base64," + data.forecast_img;
+    // Limpa resultados antigos
+    smaDiv.innerHTML = "";
+    forecastDiv.innerHTML = "";
+
+    try {
+        const response = await fetch(backendUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ticker })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        // Mostrar gráficos
+        const smaImg = document.createElement('img');
+        smaImg.src = `data:image/png;base64,${data.sma_img}`;
+        smaDiv.appendChild(smaImg);
+
+        const forecastImg = document.createElement('img');
+        forecastImg.src = `data:image/png;base64,${data.forecast_img}`;
+        forecastDiv.appendChild(forecastImg);
+
+    } catch (err) {
+        console.error(err);
+        alert("Error connecting to the backend. Make sure it is deployed and the URL is correct.");
+    }
 });
