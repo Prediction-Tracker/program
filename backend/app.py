@@ -10,7 +10,8 @@ from prophet import Prophet
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app, resources={r"/predict": {"origins": ["https://prediction-tracker.github.io"]}})
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
