@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Tracker Form</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Prediction Tracker</h1>
+    <p>Fill in the fields below to receive automatic predictions.</p>
+
+    <form id="predictionForm">
+      <!-- Email -->
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="you@email.com" required>
+
+      <!-- Ticker -->
+      <label for="ticker">Stock Ticker:</label>
+      <input type="text" id="ticker" name="ticker" placeholder="Ex: AAPL" required>
+
+      <!-- Investment amount -->
+      <label for="amount">Amount to Invest:</label>
+      <input type="number" id="amount" name="amount" placeholder="1000" min="1" step="any" required>
+
+      <!-- Send copy -->
+      <label for="sendCopy">Would you like to receive a copy by email?</label>
+      <select id="sendCopy" name="sendCopy">
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <!-- Submit button -->
+      <button type="submit">Submit</button>
+    </form>
+
+    <!-- Result message -->
+    <div id="result"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    Created by <a href="https://www.linkedin.com/in/vickycosta/" target="_blank">Vicky Costa</a>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
