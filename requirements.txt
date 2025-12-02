@@ -4,3 +4,7 @@ pandas
 matplotlib
 ta
 prophet
+statsmodels
+numpy
+scikit-learn
+tensorflow
