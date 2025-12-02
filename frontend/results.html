@@ -1,47 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Prediction Tracker Results</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prediction Results</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Prediction Tracker - Results</h1>
-    <h2 id="tickerTitle"></h2>
+<h1>Prediction Results</h1>
 
-    <div id="smaChart">
-        <h3>SMA & Close</h3>
-        <img id="smaImg" alt="SMA Chart">
-    </div>
+<div id="smaChart"></div>
+<div id="forecastChart"></div>
 
-    <div id="forecastChart">
-        <h3>30-day Forecast</h3>
-        <img id="forecastImg" alt="Forecast Chart">
-    </div>
+<footer>
+Created by <a href="https://www.linkedin.com/in/vickycosta/" target="_blank">Vicky Costa</a>
+</footer>
 
-    <footer>
-        <p>Created by <a href="https://www.linkedin.com/in/vickycosta/" target="_blank">Vicky Costa</a></p>
-    </footer>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const smaDiv = document.getElementById("smaChart");
+    const forecastDiv = document.getElementById("forecastChart");
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const smaImg = document.getElementById("smaImg");
-            const forecastImg = document.getElementById("forecastImg");
-            const tickerTitle = document.getElementById("tickerTitle");
+    const sma_img = localStorage.getItem("sma_img");
+    const forecast_img = localStorage.getItem("forecast_img");
 
-            const sma = localStorage.getItem("sma_img");
-            const forecast = localStorage.getItem("forecast_img");
-            const ticker = localStorage.getItem("ticker");
+    if(sma_img) {
+        const img = document.createElement("img");
+        img.src = `data:image/png;base64,${sma_img}`;
+        smaDiv.appendChild(img);
+    }
 
-            if (!sma || !forecast) {
-                tickerTitle.textContent = "No data available.";
-                return;
-            }
-
-            tickerTitle.textContent = `Results for ${ticker}`;
-            smaImg.src = `data:image/png;base64,${sma}`;
-            forecastImg.src = `data:image/png;base64,${forecast}`;
-        });
-    </script>
+    if(forecast_img) {
+        const img = document.createElement("img");
+        img.src = `data:image/png;base64,${forecast_img}`;
+        forecastDiv.appendChild(img);
+    }
+});
+</script>
 </body>
 </html>
