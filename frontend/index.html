@@ -1,57 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prediction Tracker Form</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Prediction Tracker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
     <h1>Prediction Tracker</h1>
-    <p>Fill in the fields below to receive automatic predictions.</p>
-
-    <form id="predictionForm">
-      <!-- Email -->
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" placeholder="you@email.com" required>
-
-      <!-- Ticker -->
-      <label for="ticker">Stock Ticker:</label>
-      <input type="text" id="ticker" name="ticker" placeholder="Ex: AAPL" required>
-
-      <!-- Investment amount -->
-      <label for="amount">Amount to Invest:</label>
-      <input type="number" id="amount" name="amount" placeholder="1000" min="1" step="any" required>
-
-      <!-- Country -->
-      <label for="country">Country:</label>
-      <select id="country" name="country" required>
-        <option value="">Select your country</option>
-        <option value="US">United States</option>
-        <option value="CA">Canada</option>
-        <option value="GB">United Kingdom</option>
-        <option value="DE">Germany</option>
-        <option value="FR">France</option>
-        <option value="BR">Brazil</option>
-        <!-- adicione outros países conforme necessário -->
-      </select>
-
-      <!-- Send copy -->
-      <label for="sendCopy">Would you like to receive a copy by email?</label>
-      <select id="sendCopy" name="sendCopy">
-        <option value="yes">Yes</option>
-        <option value="no">No</option>
-      </select>
-
-      <!-- Submit button -->
-      <button type="submit">Submit</button>
+    <form id="tickerForm">
+        <label for="ticker">Stock Ticker:</label>
+        <input type="text" id="ticker" name="ticker" required>
+        <button type="submit">Submit</button>
     </form>
-    
-    <!-- Result message -->
-    <div id="result"></div>
-  </div>
 
+    <div id="results">
+        <h2>Results</h2>
+        <img id="sma_img" src="" alt="SMA Graph">
+        <img id="forecast_img" src="" alt="Forecast Graph">
+    </div>
    <!-- Footer -->
   <footer>
     Created by <a href="https://www.linkedin.com/in/vickycosta/" target="_blank">Vicky Costa</a>
