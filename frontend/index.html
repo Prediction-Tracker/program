@@ -24,6 +24,19 @@
       <label for="amount">Amount to Invest:</label>
       <input type="number" id="amount" name="amount" placeholder="1000" min="1" step="any" required>
 
+      <!-- Country -->
+      <label for="country">Country:</label>
+      <select id="country" name="country" required>
+        <option value="">Select your country</option>
+        <option value="US">United States</option>
+        <option value="CA">Canada</option>
+        <option value="GB">United Kingdom</option>
+        <option value="DE">Germany</option>
+        <option value="FR">France</option>
+        <option value="BR">Brazil</option>
+        <!-- adicione outros países conforme necessário -->
+      </select>
+
       <!-- Send copy -->
       <label for="sendCopy">Would you like to receive a copy by email?</label>
       <select id="sendCopy" name="sendCopy">
@@ -34,12 +47,12 @@
       <!-- Submit button -->
       <button type="submit">Submit</button>
     </form>
-
+    
     <!-- Result message -->
     <div id="result"></div>
   </div>
 
-  <!-- Footer -->
+   <!-- Footer -->
   <footer>
     Created by <a href="https://www.linkedin.com/in/vickycosta/" target="_blank">Vicky Costa</a>
   </footer>
