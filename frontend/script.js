@@ -1,25 +1,19 @@
+const backendUrl = "https://program-production-b75c.up.railway.app/predict";
+
 document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("predictionForm");
 
-    const backendUrl = "https://program-production-b75c.up.railway.app/predict";
-
-    const form = document.getElementById('predictionForm');
-    const smaDiv = document.getElementById('smaChart');
-    const forecastDiv = document.getElementById('forecastChart');
-
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        const ticker = document.getElementById("ticker").value.trim().toUpperCase();
 
-        const ticker = document.getElementById('ticker').value.trim().toUpperCase();
         if (!ticker) {
             alert("Please enter a stock ticker.");
             return;
         }
 
-        smaDiv.innerHTML = "";
-        forecastDiv.innerHTML = "";
-
         try {
-            const response = await fetch(backendUrl, {
+            const response = await fetch(backendUrl, {  // <--- usa a variável aqui
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ticker })
@@ -32,17 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const smaImg = document.createElement('img');
-            smaImg.src = `data:image/png;base64,${data.sma_img}`;
-            smaDiv.appendChild(smaImg);
+            localStorage.setItem("sma_img", data.sma_img);
+            localStorage.setItem("forecast_img", data.forecast_img);
+            localStorage.setItem("ticker", ticker);
 
-            const forecastImg = document.createElement('img');
-            forecastImg.src = `data:image/png;base64,${data.forecast_img}`;
-            forecastDiv.appendChild(forecastImg);
+            window.location.href = "results.html";
 
         } catch (err) {
             console.error(err);
-            alert("Erro conectando ao backend.");
+            alert("Error connecting to backend. Make sure the Railway app is running.");
         }
     });
 });
