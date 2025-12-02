@@ -8,6 +8,7 @@ from ta.trend import SMAIndicator
 from ta.momentum import RSIIndicator
 from prophet import Prophet
 import pandas as pd
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -64,5 +65,6 @@ def predict():
     return jsonify({"sma_img": sma_img, "forecast_img": forecast_img})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
 
