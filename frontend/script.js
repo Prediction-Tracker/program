@@ -1,4 +1,6 @@
 const backendUrl = "https://program-production-b75c.up.railway.app/predict";
+const response = await fetch(backendUrl, { method: "POST", body: JSON.stringify({ ticker }) });
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("predictionForm");
