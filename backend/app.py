@@ -1,9 +1,9 @@
+# backend/app.py
 from flask import Flask, request, jsonify
-from flask_cors import CORS 
+from flask_cors import CORS
 import yfinance as yf
 import matplotlib.pyplot as plt
 import io, base64
-from statsmodels.tsa.arima.model import ARIMA
 from ta.trend import SMAIndicator
 from ta.momentum import RSIIndicator
 from prophet import Prophet
@@ -11,27 +11,32 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-CORS(app)
+
+# Permitir requests do frontend GitHub Pages
+CORS(app, resources={r"/predict": {"origins": ["https://prediction-tracker.github.io"]}})
 
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.json
     ticker = data.get("ticker")
 
-    # Validar ticker
+    if not ticker:
+        return jsonify({"error": "Ticker is required"}), 400
+
+    # Baixar dados do Yahoo Finance
     try:
         df = yf.download(ticker, period="1y", interval="1d", auto_adjust=True)
         if df.empty:
             return jsonify({"error": "Invalid ticker"}), 400
-    except:
-        return jsonify({"error": "Failed to fetch data"}), 400
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch data: {str(e)}"}), 400
 
-    # Indicadores
+    # Indicadores técnicos
     df["SMA20"] = SMAIndicator(df["Close"], window=20).sma_indicator()
     df["SMA50"] = SMAIndicator(df["Close"], window=50).sma_indicator()
     df["RSI"] = RSIIndicator(df["Close"], window=14).rsi()
 
-    # Gráfico SMA
+    # Gráfico SMA + Close
     plt.figure(figsize=(10,4))
     plt.plot(df["Close"], label="Close")
     plt.plot(df["SMA20"], label="SMA20")
@@ -51,6 +56,7 @@ def predict():
     future = model.make_future_dataframe(periods=30)
     forecast = model.predict(future)
 
+    # Gráfico previsão
     plt.figure(figsize=(10,4))
     plt.plot(df_reset["ds"], df_reset["y"], label="History")
     plt.plot(forecast["ds"], forecast["yhat"], label="Forecast", linestyle="--")
@@ -65,6 +71,5 @@ def predict():
     return jsonify({"sma_img": sma_img, "forecast_img": forecast_img})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5000))  
     app.run(host="0.0.0.0", port=port)
-
