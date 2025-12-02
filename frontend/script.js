@@ -1,35 +1,28 @@
-// script.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("predictionForm");
   const resultDiv = document.getElementById("result");
 
   form.addEventListener("submit", async (e) => {
-    e.preventDefault(); // evita refresh da página
+    e.preventDefault();
 
-    // Captura os valores do formulário
     const email = document.getElementById("email").value.trim();
     const ticker = document.getElementById("ticker").value.trim().toUpperCase();
     const amount = parseFloat(document.getElementById("amount").value);
+    const country = document.getElementById("country").value;
     const sendCopy = document.getElementById("sendCopy").value;
 
-    // Validações básicas
-    if (!email || !ticker || isNaN(amount) || amount <= 0) {
+    if (!email || !ticker || isNaN(amount) || amount <= 0 || !country) {
       resultDiv.textContent = "Please fill in all fields correctly.";
       resultDiv.style.color = "red";
       return;
     }
 
-    // Prepara os dados para envio
-    const data = { email, ticker, amount, send_copy: sendCopy };
+    const data = { email, ticker, amount, send_copy: sendCopy, country };
 
     try {
-      // Faz requisição para o backend
       const response = await fetch("/submit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
@@ -38,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.ok) {
         resultDiv.textContent = resData.success;
         resultDiv.style.color = "green";
-        form.reset(); // limpa o formulário
+        form.reset();
       } else {
         resultDiv.textContent = resData.error || "Error submitting the form.";
         resultDiv.style.color = "red";
