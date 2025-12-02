@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prediction Results</title>
+</head>
+<body>
+<h1>Prediction Results</h1>
+
+<h2>SMA + Close</h2>
+<img id="smaImg" />
+
+<h2>Forecast 30 dias</h2>
+<img id="forecastImg" />
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const smaImg = localStorage.getItem("sma_img");
+    const forecastImg = localStorage.getItem("forecast_img");
+
+    if(smaImg) document.querySelector("#smaImg").src = "data:image/png;base64," + smaImg;
+    if(forecastImg) document.querySelector("#forecastImg").src = "data:image/png;base64," + forecastImg;
+});
+</script>
+
+<footer>
+Created by <a href="https://www.linkedin.com/in/vickycosta/" target="_blank">Vicky Costa</a>
+</footer>
+</body>
+</html>
